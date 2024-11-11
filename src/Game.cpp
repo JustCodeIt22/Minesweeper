@@ -19,6 +19,11 @@ void resize(sf::Sprite &s, sf::Vector2f sprite_size)
 
 Game::Game(int width, int height, std::string title) : mWindow(sf::VideoMode(width, height), title), scoreBoardRect(sf::Vector2f(width, 100))
 {
+    // setting icon
+    sf::Image icon;
+    icon.loadFromFile("../assets/imgs/minesweeper_ic.png");
+    mWindow.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+
     // srand() -> changes the seed or starting point of rand() algorithm.
     // (here it uses current time as seed for random generator)
     srand(time(0));
@@ -97,8 +102,7 @@ void Game::handle_events(sf::Event &event)
         // Mouse Events
         if (event.type == sf::Event::MouseButtonPressed)
         {
-
-            if (event.key.code == sf::Mouse::Left)
+            if (event.mouseButton.button == sf::Mouse::Left)
             {
                 if (moods_sprite.getGlobalBounds().contains(mouse_pos.x, mouse_pos.y))
                 {
@@ -134,7 +138,7 @@ void Game::handle_events(sf::Event &event)
                     }
                 }
             }
-            else if (event.key.code == sf::Mouse::Right)
+            else if (event.mouseButton.button == sf::Mouse::Right)
             {
                 if (mine_cnt > 0)
                 {
@@ -148,10 +152,17 @@ void Game::handle_events(sf::Event &event)
                     mine_cnt--;
                 }
             }
+
+            // check if the player is winnner
+            if (isWinner())
+            {
+                timerStarted = false;
+                moods_sprite.setTextureRect(sf::IntRect(4 * 24 * 3, 0, 24 * 3, 24 * 3));
+            }
         }
         if (event.type == sf::Event::MouseButtonReleased)
         {
-            if (event.key.code == sf::Mouse::Left)
+            if (event.mouseButton.button == sf::Mouse::Left)
             {
                 if (moods_sprite.getGlobalBounds().contains(mouse_pos.x, mouse_pos.y))
                 {
@@ -223,7 +234,7 @@ void Game::fillGrid()
         for (int j = 0; j < 12; j++)
         {
             sgrid[i][j] = 10;
-            if (rand() % 8 == 0)
+            if (rand() % 20 == 0)
             {
                 grid[i][j] = 9;
                 mine_cnt++;
@@ -366,7 +377,24 @@ void Game::revealNeighbours(int curr_row, int curr_col)
     }
 }
 
-// grid[nRow + 1][nCol] != 0 && grid[nRow - 1][nCol] == 0 && grid[nRow][nCol + 1] == 0 && grid[nRow][nCol - 1] == 0
-// grid[nRow - 1][nCol] != 0 && grid[nRow + 1][nCol] == 0 && grid[nRow][nCol + 1] == 0 && grid[nRow][nCol - 1] == 0
-// grid[nRow][nCol + 1] != 0 && grid[nRow + 1][nCol] == 0 && grid[nRow - 1][nCol] == 0 && grid[nRow][nCol - 1] == 0
-// grid[nRow][nCol - 1] != 0 && grid[nRow + 1][nCol] == 0 && grid[nRow - 1][nCol] == 0 && grid[nRow][nCol + 1] == 0
+bool Game::isRevealed(int row, int col)
+{
+    return sgrid[row][col] != 10;
+}
+
+bool Game::isWinner()
+{
+    for (int i = 0; i < 12; i++)
+    {
+        for (int j = 0; j < 12; j++)
+        {
+            if (!isRevealed(i, j) && grid[i][j] != 9)
+            {
+                // std::cout << i << " " << j << "\n"; // don't uncomment this line !!
+                return false;
+            }
+        }
+    }
+
+    return true;
+}

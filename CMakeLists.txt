@@ -3,7 +3,6 @@ project(Minesweeper VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-
 include_directories("C:/SFML/include")
 include_directories(${CMAKE_SOURCE_DIR}/include)
 # include_directories(${CMAKE_SOURCE_DIR}/imgui)
@@ -20,7 +19,11 @@ find_package(Freetype REQUIRED)
 add_definitions(-DSFML_STATIC)
 file(GLOB_RECURSE SRC_FILES src/*.cpp) # imgui/*.cpp)
 
-add_executable(Minesweeper ${SRC_FILES})
+# with console window
+# add_executable(Minesweeper ${SRC_FILES} assets/minesweeper.rc)
+
+# To hide the console window (without console window)
+add_executable(Minesweeper WIN32 ${SRC_FILES} assets/minesweeper.rc)
 
 target_link_libraries(Minesweeper 
     sfml-graphics

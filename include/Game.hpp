@@ -31,6 +31,7 @@ private:
     int sgrid[ROWS][COLS];
     int mine_cnt;
 
+    // Textures and Sprites
     sf::Texture tile_tex;
     sf::Sprite tile_sprite;
 
@@ -62,4 +63,6 @@ private:
     void fillGrid();
     void revealMines();
     void revealNeighbours(int curr_row, int curr_col);
+    bool isRevealed(int row, int col);
+    bool isWinner();
 };
